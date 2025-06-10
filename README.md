@@ -44,6 +44,8 @@ The player uses the exact same styles as the `SpotifyControls` plugin, except ev
 
 Since the YouTube Music Desktop App does not provide a websocket API, the plugin has to poll the API every second to get the current song and player state. This is ~~probably~~ definitely not ideal whatsoever, but unless I'm stupid, it is the only way to reliably get the current state of the player as it could become desynced if the user changes anything in the YouTube Music Desktop App.
 
+If you do want to change the polling interval, you can do so in the plugin settings.
+
 ## Disclaimer
 
 This is my first Vencord plugin, so it is probably (definitely) not the best code ever. If you have any issues, suggestions or improvements, feel free to [open an issue](https://github.com/cxntered/youtubeMusicControls/issues) or [make a pull request](https://github.com/cxntered/youtubeMusicControls/pulls).
