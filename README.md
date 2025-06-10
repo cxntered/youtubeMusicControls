@@ -51,7 +51,7 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 ## To Do
 
 - [ ] Add compatibility with `SpotifyControls`
-- [ ] Add a setting to change the polling interval
 - [ ] Allow using "Authorize at first request" as an authorization strategy
 - [ ] Merge pre- and post-visual refresh styles
 - [ ] Clean up code
+- [x] Add a setting to change the polling interval

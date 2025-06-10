@@ -6,6 +6,7 @@
 
 import "../styles/ytMusicStyles.css";
 
+import { Settings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import { Flex } from "@components/Flex";
 import { ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
@@ -141,12 +142,20 @@ function Controls() {
 }
 
 function YouTubeMusicSeekBar({ song }: { song: Song; }) {
-    const { songDuration, elapsedSeconds } = song;
+    const { songDuration, elapsedSeconds, isPaused } = song;
     const [position, setPosition] = useState(elapsedSeconds * 1000);
 
     useEffect(() => {
         setPosition(elapsedSeconds * 1000);
-    }, [elapsedSeconds]);
+
+        if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval !== 1000) {
+            const interval = setInterval(() => {
+                setPosition(p => p + 1000);
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }
+    }, [elapsedSeconds, isPaused]);
 
     const onChange = (v: number) => {
         setPosition(v);
@@ -315,7 +324,7 @@ export function Player() {
         }
     }, [isPaused]);
 
-    // refresh player state every second
+    // refresh player state every pollInterval
     useEffect(() => {
         const interval = setInterval(async () => {
             const [songData, shuffle, repeat] = await Promise.all([
@@ -333,10 +342,10 @@ export function Player() {
 
             setSong(songData);
             setIsPaused(songData.isPaused);
-        }, 1000);
+        }, Settings.plugins.YouTubeMusicControls.pollInterval);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [Settings.plugins.YouTubeMusicControls.pollInterval]);
 
     if (!song || shouldHide)
         return null;

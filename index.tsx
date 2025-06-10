@@ -25,9 +25,12 @@ export default definePlugin({
         port: {
             description: "YouTube Music API server's port",
             type: OptionType.NUMBER,
-            default: 26538,
-            min: 1,
-            max: 65535
+            default: 26538
+        },
+        pollInterval: {
+            description: "Polling interval (in milliseconds) to update the player state",
+            type: OptionType.NUMBER,
+            default: 1000
         },
         hoverControls: {
             description: "Show controls on hover",
