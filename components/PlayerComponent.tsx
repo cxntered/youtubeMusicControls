@@ -184,7 +184,15 @@ function YouTubeMusicSeekBar({ song }: { song: Song; }) {
 }
 
 function AlbumContextMenu({ song }: { song: Song; }) {
-    const { volume } = playerState;
+    const [volume, setVolumeState] = useState<number | null>(null);
+
+    useEffect(() => {
+        fetchApi("/volume")
+            .then(res => res.json())
+            .then(({ state }) => setVolumeState(state));
+    }, []);
+
+    if (volume === null) return null;
 
     return (
         <Menu.Menu
@@ -310,9 +318,8 @@ export function Player() {
     // refresh player state every second
     useEffect(() => {
         const interval = setInterval(async () => {
-            const [songData, volume, shuffle, repeat] = await Promise.all([
+            const [songData, shuffle, repeat] = await Promise.all([
                 fetchApi("/song").then(res => res.json()),
-                fetchApi("/volume").then(res => res.json()),
                 fetchApi("/shuffle").then(res => res.json()),
                 fetchApi("/repeat-mode").then(res => res.json())
             ]);
@@ -320,7 +327,6 @@ export function Player() {
             Object.assign(playerState, {
                 song: songData,
                 isPaused: songData.isPaused,
-                volume: volume.state,
                 shuffle: shuffle.state,
                 repeat: repeat.mode
             });

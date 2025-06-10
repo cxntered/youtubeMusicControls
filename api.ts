@@ -29,7 +29,6 @@ export interface Song {
 interface PlayerState {
     song: Song | null;
     isPaused: boolean;
-    volume: number;
     shuffle: boolean;
     repeat: Repeat;
 }
@@ -39,7 +38,6 @@ export type Repeat = "NONE" | "ALL" | "ONE";
 export const playerState: PlayerState = {
     song: null,
     isPaused: true,
-    volume: 100,
     shuffle: false,
     repeat: "NONE"
 };
@@ -108,8 +106,6 @@ export const setVolume = async (volume: number) => {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({ volume })
-    }).then(async () => {
-        playerState.volume = volume;
     });
 };
 
