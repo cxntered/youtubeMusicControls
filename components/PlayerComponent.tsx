@@ -104,10 +104,9 @@ function Controls() {
 
     const repeatClassName = (() => {
         switch (repeat) {
-            case "NONE": return "repeat-off";
             case "ALL": return "repeat-context";
             case "ONE": return "repeat-track";
-            default: throw new Error(`Invalid repeat state ${repeat}`);
+            default: case "NONE": return "repeat-off";
         }
     })();
 
