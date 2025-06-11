@@ -38,13 +38,13 @@ If you are using a different port, you can change it in the plugin settings. If 
 
 The player uses the exact same styles as the `SpotifyControls` plugin, except every instance of `spotify` is renamed to `ytmusic`.
 
-### Why does it make requests every second?
+### Why does it make requests so frequently?
 
 ...yeah 😭
 
-Since the YouTube Music Desktop App does not provide a websocket API, the plugin has to poll the API every second to get the current song and player state. This is ~~probably~~ definitely not ideal whatsoever, but unless I'm stupid, it is the only way to reliably get the current state of the player as it could become desynced if the user changes anything in the YouTube Music Desktop App.
+Since the YouTube Music Desktop App does not provide a websocket API, the plugin has to poll the API periodically to get the current song and player state. This is ~~probably~~ definitely not ideal whatsoever, but unless I'm stupid, it is the only way to reliably get the current state of the player as it could become desynced if the user changes anything in the YouTube Music Desktop App.
 
-If you do want to change the polling interval, you can do so in the plugin settings.
+If you don't really care about the player state being 100% accurate, you can change the polling interval in the plugin settings (by default its 5000ms).
 
 ## Disclaimer
 
@@ -52,9 +52,10 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 
 ## To Do
 
-- [ ] Poll periodically if API server isn't running
+- [ ] Poll less frequently if API server isn't running
 - [ ] Add compatibility with `SpotifyControls`
 - [ ] Allow using "Authorize at first request" as an authorization strategy
 - [ ] Merge pre- and post-visual refresh styles
-- [ ] Clean up code
+- [ ] PR a websocket API to YTMDA and use that instead of polling
+- [x] Clean up code
 - [x] Add a setting to change the polling interval

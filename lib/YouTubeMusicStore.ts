@@ -1,0 +1,152 @@
+/*
+ * Vencord, a Discord client mod
+ * Copyright (c) 2025 Vendicated and contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+import { proxyLazyWebpack } from "@webpack";
+import { Flux, FluxDispatcher } from "@webpack/common";
+import { Settings } from "Vencord";
+
+import { API_PATH, BASE_URL } from "./constants";
+
+export interface Song {
+    title: string;
+    alternativeTitle: string;
+    artist: string;
+    views: number;
+    uploadDate: string;
+    imageSrc: string;
+    isPaused: boolean;
+    songDuration: number;
+    elapsedSeconds: number;
+    url: string;
+    album: string;
+    videoId: string;
+    playlistId: string;
+    mediaType: string;
+    tags: string[];
+}
+
+export type Repeat = "NONE" | "ALL" | "ONE";
+
+const API_BASE = () => BASE_URL + ":" + Settings.plugins.YouTubeMusicControls.port + API_PATH;
+
+export const YouTubeMusicStore = proxyLazyWebpack(() => {
+    const { Store } = Flux;
+
+    class YouTubeMusicStore extends Store {
+        public song: Song | null = null;
+        public isPaused = true;
+        public shuffle = false;
+        public repeat: Repeat = "NONE";
+        public volume = 100;
+
+        async togglePlayback() {
+            await this.fetchApi("/toggle-play", { method: "POST" });
+            this.isPaused = !this.isPaused;
+            this.emitChange();
+        }
+
+        async nextSong() {
+            await this.fetchApi("/next", { method: "POST" });
+            this.song = { ...this.song!, elapsedSeconds: 0 };
+            this.isPaused = false;
+            this.emitChange();
+
+            // waits 1500 ms because /song endpoint is not updated immediately
+            setTimeout(() => {
+                this.fetchApi("/song").then(res => res.json()).then(song => {
+                    this.song = song;
+                    this.emitChange();
+                });
+            }, 1500);
+        }
+
+        async previousSong() {
+            await this.fetchApi("/previous", { method: "POST" });
+            this.song = { ...this.song!, elapsedSeconds: 0 };
+            this.emitChange();
+
+            // waits 1500 ms because /song endpoint is not updated immediately
+            setTimeout(() => {
+                this.fetchApi("/song").then(res => res.json()).then(song => {
+                    this.song = song;
+                    this.emitChange();
+                });
+            }, 1500);
+        }
+
+        async toggleShuffle() {
+            await this.fetchApi("/shuffle", { method: "POST" });
+            this.shuffle = !this.shuffle;
+            this.emitChange();
+        }
+
+        async toggleRepeat() {
+            await this.fetchApi("/switch-repeat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ iteration: 1 })
+            });
+            this.repeat = this.repeat === "NONE" ? "ALL" : this.repeat === "ALL" ? "ONE" : "NONE";
+            this.emitChange();
+        }
+
+        async seek(seconds: number) {
+            await this.fetchApi("/seek-to", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ seconds })
+            });
+            this.song = { ...this.song!, elapsedSeconds: seconds };
+            this.emitChange();
+
+            // waits 1500 ms because /song endpoint is not updated immediately
+            setTimeout(() => {
+                this.fetchApi("/song").then(res => res.json()).then(song => {
+                    this.song = song;
+                    this.emitChange();
+                });
+            }, 1500);
+        }
+
+        async setVolume(volume: number) {
+            await this.fetchApi("/volume", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ volume })
+            });
+            this.volume = volume;
+            this.emitChange();
+        }
+
+        async refreshState() {
+            const [songData, shuffle, repeat] = await Promise.all([
+                this.fetchApi("/song").then(res => res.json()),
+                this.fetchApi("/shuffle").then(res => res.json()),
+                this.fetchApi("/repeat-mode").then(res => res.json())
+            ]);
+            this.song = songData;
+            this.isPaused = songData.isPaused;
+            this.shuffle = shuffle.state;
+            this.repeat = repeat.mode;
+            this.emitChange();
+        }
+
+        async fetchApi(path: string, options?: RequestInit) {
+            const res = await fetch(new URL(API_BASE() + path), {
+                ...options,
+                headers: {
+                    ...options?.headers
+                }
+            });
+            if (res.ok) return res;
+            else throw new Error(await res.text());
+        }
+    }
+
+    const store = new YouTubeMusicStore(FluxDispatcher, {});
+    store.refreshState();
+    return store;
+});

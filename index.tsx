@@ -30,7 +30,7 @@ export default definePlugin({
         pollInterval: {
             description: "Polling interval (in milliseconds) to update the player state",
             type: OptionType.NUMBER,
-            default: 1000
+            default: 5000
         },
         hoverControls: {
             description: "Show controls on hover",

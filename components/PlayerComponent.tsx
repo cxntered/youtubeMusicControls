@@ -13,9 +13,9 @@ import { ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
 import { debounce } from "@shared/debounce";
 import { openImageModal } from "@utils/discord";
 import { classes, copyWithToast } from "@utils/misc";
-import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useState } from "@webpack/common";
+import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
-import { fetchApi, nextSong, playerState, previousSong, Repeat, seek, setVolume, Song, togglePlayback, toggleRepeat, toggleShuffle } from "../api";
+import { Song, YouTubeMusicStore } from "../lib/YouTubeMusicStore";
 import { SeekBar } from "./SeekBar";
 
 const cl = classNameFactory("vc-ytmusic-");
@@ -100,7 +100,10 @@ function makeContextMenu(name: string, url: string) {
 }
 
 function Controls() {
-    const { isPaused, shuffle, repeat } = playerState;
+    const [isPaused, shuffle, repeat] = useStateFromStores(
+        [YouTubeMusicStore],
+        () => [YouTubeMusicStore.isPaused, YouTubeMusicStore.shuffle, YouTubeMusicStore.repeat]
+    );
 
     const repeatClassName = (() => {
         switch (repeat) {
@@ -115,22 +118,22 @@ function Controls() {
         <Flex className={cl("button-row")} style={{ gap: 0 }}>
             <Button
                 className={classes(cl("button"), cl("shuffle"), cl(shuffle ? "shuffle-on" : "shuffle-off"))}
-                onClick={() => toggleShuffle()}
+                onClick={() => YouTubeMusicStore.toggleShuffle()}
             >
                 <Shuffle />
             </Button>
-            <Button onClick={() => previousSong()}>
+            <Button onClick={() => YouTubeMusicStore.previousSong()}>
                 <SkipPrev />
             </Button>
-            <Button onClick={() => togglePlayback()}>
+            <Button onClick={() => YouTubeMusicStore.togglePlayback()}>
                 {isPaused ? <PlayButton /> : <PauseButton />}
             </Button>
-            <Button onClick={() => nextSong()}>
+            <Button onClick={() => YouTubeMusicStore.nextSong()}>
                 <SkipNext />
             </Button>
             <Button
                 className={classes(cl("button"), cl("repeat"), cl(repeatClassName))}
-                onClick={() => toggleRepeat()}
+                onClick={() => YouTubeMusicStore.toggleRepeat()}
                 style={{ position: "relative" }}
             >
                 {repeat === "ONE" && <span className={cl("repeat-1")}>1</span>}
@@ -140,27 +143,37 @@ function Controls() {
     );
 }
 
-function YouTubeMusicSeekBar({ song }: { song: Song; }) {
-    const { songDuration, elapsedSeconds, isPaused } = song;
-    const [position, setPosition] = useState(elapsedSeconds * 1000);
+const debouncedSeek = debounce((v: number) => {
+    YouTubeMusicStore.seek(v);
+});
+
+function YouTubeMusicSeekBar() {
+    const [song, isPaused] = useStateFromStores(
+        [YouTubeMusicStore],
+        () => [YouTubeMusicStore.song!, YouTubeMusicStore.isPaused]
+    );
+
+    const [position, setPosition] = useState(song.elapsedSeconds * 1000);
 
     useEffect(() => {
-        setPosition(elapsedSeconds * 1000);
+        setPosition(song.elapsedSeconds * 1000);
+    }, [song]);
 
+    useEffect(() => {
         if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval !== 1000) {
             const interval = setInterval(() => {
                 setPosition(p => p + 1000);
             }, 1000);
 
-            return () => clearInterval(interval);
+            return () => {
+                clearInterval(interval);
+            };
         }
-    }, [elapsedSeconds, isPaused]);
+    }, [isPaused, song]);
 
     const onChange = (v: number) => {
         setPosition(v);
-        debounce((value: number) => {
-            seek(value / 1000);
-        })(v);
+        debouncedSeek(v / 1000);
     };
 
     return (
@@ -175,7 +188,7 @@ function YouTubeMusicSeekBar({ song }: { song: Song; }) {
             <SeekBar
                 initialValue={position}
                 minValue={0}
-                maxValue={songDuration * 1000}
+                maxValue={song.songDuration * 1000}
                 onValueChange={onChange}
                 asValueChanges={onChange}
                 onValueRender={msToHuman}
@@ -185,22 +198,14 @@ function YouTubeMusicSeekBar({ song }: { song: Song; }) {
                 className={cl("progress-time") + " " + cl("time-right")}
                 aria-label="Total Duration"
             >
-                {msToHuman(songDuration * 1000)}
+                {msToHuman(song.songDuration * 1000)}
             </Forms.FormText>
         </div>
     );
 }
 
 function AlbumContextMenu({ song }: { song: Song; }) {
-    const [volume, setVolumeState] = useState<number | null>(null);
-
-    useEffect(() => {
-        fetchApi("/volume")
-            .then(res => res.json())
-            .then(({ state }) => setVolumeState(state));
-    }, []);
-
-    if (volume === null) return null;
+    const volume = useStateFromStores([YouTubeMusicStore], () => YouTubeMusicStore.volume);
 
     return (
         <Menu.Menu
@@ -226,7 +231,7 @@ function AlbumContextMenu({ song }: { song: Song; }) {
                         value={volume}
                         minValue={0}
                         maxValue={100}
-                        onChange={debounce((v: number) => setVolume(v))}
+                        onChange={debounce((v: number) => YouTubeMusicStore.setVolume(v))}
                     />
                 )}
             />
@@ -310,8 +315,11 @@ function Info({ song }: { song: Song; }) {
 }
 
 export function Player() {
-    const [isPaused, setIsPaused] = useState(playerState.isPaused);
-    const [song, setSong] = useState(playerState.song);
+    const [song, isPaused] = useStateFromStores(
+        [YouTubeMusicStore],
+        () => [YouTubeMusicStore.song, YouTubeMusicStore.isPaused]
+    );
+
     const [shouldHide, setShouldHide] = useState(false);
 
     // hide player after 5 minutes of inactivity
@@ -325,24 +333,9 @@ export function Player() {
 
     // refresh player state every pollInterval
     useEffect(() => {
-        const interval = setInterval(async () => {
-            const [songData, shuffle, repeat] = await Promise.all([
-                fetchApi("/song").then(res => res.json()),
-                fetchApi("/shuffle").then(res => res.json()),
-                fetchApi("/repeat-mode").then(res => res.json())
-            ]);
-
-            Object.assign(playerState, {
-                song: songData,
-                isPaused: songData.isPaused,
-                shuffle: shuffle.state,
-                repeat: repeat.mode
-            });
-
-            setSong(songData);
-            setIsPaused(songData.isPaused);
+        const interval = setInterval(() => {
+            YouTubeMusicStore.refreshState();
         }, Settings.plugins.YouTubeMusicControls.pollInterval);
-
         return () => clearInterval(interval);
     }, [Settings.plugins.YouTubeMusicControls.pollInterval]);
 
@@ -356,7 +349,7 @@ export function Player() {
     return (
         <div id={cl("player")} style={exportTrackImageStyle}>
             <Info song={song} />
-            <YouTubeMusicSeekBar song={song} />
+            <YouTubeMusicSeekBar />
             <Controls />
         </div>
     );
