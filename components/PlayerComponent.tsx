@@ -13,7 +13,7 @@ import { ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
 import { debounce } from "@shared/debounce";
 import { openImageModal } from "@utils/discord";
 import { classes, copyWithToast } from "@utils/misc";
-import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
+import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useRef, useState, useStateFromStores } from "@webpack/common";
 
 import { Song, YouTubeMusicStore } from "../lib/YouTubeMusicStore";
 import { SeekBar } from "./SeekBar";
@@ -154,6 +154,11 @@ function YouTubeMusicSeekBar() {
     );
 
     const [position, setPosition] = useState(song.elapsedSeconds * 1000);
+    const positionRef = useRef(position);
+
+    useEffect(() => {
+        positionRef.current = position;
+    }, [position]);
 
     useEffect(() => {
         setPosition(song.elapsedSeconds * 1000);
@@ -162,7 +167,9 @@ function YouTubeMusicSeekBar() {
     useEffect(() => {
         if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval !== 1000) {
             const interval = setInterval(() => {
-                setPosition(p => p + 1000);
+                if (positionRef.current < song.songDuration * 1000) {
+                    setPosition(p => p + 1000);
+                }
             }, 1000);
 
             return () => {
