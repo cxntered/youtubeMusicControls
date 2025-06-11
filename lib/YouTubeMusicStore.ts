@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { proxyLazyWebpack } from "@webpack";
+import { proxyLazy } from "@utils/lazy";
 import { Flux, FluxDispatcher } from "@webpack/common";
 import { Settings } from "Vencord";
 
@@ -32,7 +32,7 @@ export type Repeat = "NONE" | "ALL" | "ONE";
 
 const API_BASE = () => BASE_URL + ":" + Settings.plugins.YouTubeMusicControls.port + API_PATH;
 
-export const YouTubeMusicStore = proxyLazyWebpack(() => {
+export const YouTubeMusicStore = proxyLazy(() => {
     const { Store } = Flux;
 
     class YouTubeMusicStore extends Store {
