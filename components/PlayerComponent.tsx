@@ -158,6 +158,12 @@ function YouTubeMusicSeekBar() {
 
     useEffect(() => {
         positionRef.current = position;
+        if (positionRef.current >= song.songDuration * 1000) {
+            // wait 1500ms because the song is not updated immediately
+            setTimeout(() => {
+                YouTubeMusicStore.refreshState();
+            }, 1500);
+        }
     }, [position]);
 
     useEffect(() => {
