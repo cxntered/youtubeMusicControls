@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { CspPolicies, MediaSrc } from "@main/csp";
+import { CspPolicies, ImageSrc } from "@main/csp";
 
 // allow album images to be loaded
-CspPolicies["lh3.googleusercontent.com"] = MediaSrc;
+CspPolicies["lh3.googleusercontent.com"] = ImageSrc;
