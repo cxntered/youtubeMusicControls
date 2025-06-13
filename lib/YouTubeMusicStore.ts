@@ -40,7 +40,6 @@ export const YouTubeMusicStore = proxyLazy(() => {
         public isPaused = true;
         public shuffle = false;
         public repeat: Repeat = "NONE";
-        public volume = 100;
 
         async togglePlayback() {
             await this.fetchApi("/toggle-play", { method: "POST" });
@@ -117,7 +116,6 @@ export const YouTubeMusicStore = proxyLazy(() => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ volume })
             });
-            this.volume = volume;
             this.emitChange();
         }
 

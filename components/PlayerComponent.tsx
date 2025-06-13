@@ -218,7 +218,15 @@ function YouTubeMusicSeekBar() {
 }
 
 function AlbumContextMenu({ song }: { song: Song; }) {
-    const volume = useStateFromStores([YouTubeMusicStore], () => YouTubeMusicStore.volume);
+    const [volume, setVolume] = useState<number | null>(null);
+
+    useEffect(() => {
+        YouTubeMusicStore.fetchApi("/volume")
+            .then(res => res.json())
+            .then(({ state }) => setVolume(state));
+    }, []);
+
+    if (volume === null) return null;
 
     return (
         <Menu.Menu
