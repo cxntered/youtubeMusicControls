@@ -20,10 +20,6 @@ After that, you can enable the plugin in the Vencord settings under "Plugins" an
 
 ## Questions and Answers
 
-### Does this work with `SpotifyControls`?
-
-Not yet. If I'm smart enough, it will be fixed in the future. Currently, if both plugins are enabled, the YouTube Music player will not show up, but the Spotify player will still work.
-
 ### Why does the player not show up?
 
 Make sure the `API Server [Beta]` plugin is enabled, and that its using the following settings:
@@ -53,9 +49,9 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 ## To Do
 
 - [ ] Poll less frequently if API server isn't running
-- [ ] Add compatibility with `SpotifyControls`
 - [ ] Allow using "Authorize at first request" as an authorization strategy
 - [ ] Merge pre- and post-visual refresh styles
 - [ ] PR a websocket API to YTMDA and use that instead of polling
+- [x] Add compatibility with `SpotifyControls`
 - [x] Clean up code
 - [x] Add a setting to change the polling interval

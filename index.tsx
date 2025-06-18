@@ -41,34 +41,30 @@ export default definePlugin({
     },
     patches: [
         {
-            find: "this.isCopiedStreakGodlike",
-            replacement: {
-                // react.jsx)(AccountPanel, { ..., showTaglessAccountPanel: blah })
-                match: /(?<=\i\.jsxs?\)\()(\i),{(?=[^}]*?userTag:\i,hidePrivateData:)/,
-                // react.jsx(WrapperComponent, { VencordOriginal: AccountPanel, ...
-                replace: "$self.PanelWrapper,{VencordOriginal:$1,"
-            }
+            find: 'setProperty("--custom-app-panels-height"',
+            replacement: [
+                {
+                    match: /(\(0,\i\.jsx\))\(\i\.Z,\{section:_.\i.ACCOUNT_PANEL/,
+                    replace: "$1($self.Panel, {}), $&"
+                }
+            ]
         }
     ],
 
     start: () => toggleHoverControls(Settings.plugins.YouTubeMusicControls.hoverControls),
 
-    PanelWrapper({ VencordOriginal, ...props }) {
+    Panel() {
         return (
-            <>
-                <ErrorBoundary
-                    fallback={() => (
-                        <div className="vc-ytmusic-fallback">
-                            <p>Failed to render YouTube Music Modal :(</p>
-                            <p>Check the console for errors</p>
-                        </div>
-                    )}
-                >
-                    <Player />
-                </ErrorBoundary>
-
-                <VencordOriginal {...props} />
-            </>
+            <ErrorBoundary
+                fallback={() => (
+                    <div className="vc-ytmusic-fallback">
+                        <p>Failed to render YouTube Music Modal :(</p>
+                        <p>Check the console for errors</p>
+                    </div>
+                )}
+            >
+                <Player />
+            </ErrorBoundary>
         );
     }
 });
