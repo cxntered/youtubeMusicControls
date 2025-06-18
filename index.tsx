@@ -32,6 +32,11 @@ export default definePlugin({
             type: OptionType.NUMBER,
             default: 5000
         },
+        expandCover: {
+            description: "Expand the song cover image on click",
+            type: OptionType.BOOLEAN,
+            default: true
+        },
         hoverControls: {
             description: "Show controls on hover",
             type: OptionType.BOOLEAN,

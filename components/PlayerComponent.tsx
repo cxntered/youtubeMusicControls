@@ -280,7 +280,7 @@ function Info({ song }: { song: Song; }) {
                     id={cl("album-image")}
                     src={img}
                     alt="Album Image"
-                    onClick={() => setCoverExpanded(!coverExpanded)}
+                    onClick={() => Settings.plugins.YouTubeMusicControls.expandCover && setCoverExpanded(!coverExpanded)}
                     onContextMenu={e => {
                         ContextMenuApi.openContextMenu(e, () => <AlbumContextMenu song={song} />);
                     }}
