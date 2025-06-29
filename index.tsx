@@ -47,12 +47,10 @@ export default definePlugin({
     patches: [
         {
             find: 'setProperty("--custom-app-panels-height"',
-            replacement: [
-                {
-                    match: /(\(0,\i\.jsx\))\(\i\.Z,\{section:_.\i.ACCOUNT_PANEL/,
-                    replace: "$1($self.Panel, {}), $&"
-                }
-            ]
+            replacement: {
+                match: /(\(0,\i\.jsx\))\(\i\.Z,\{section:\i.\i.ACCOUNT_PANEL/,
+                replace: "$1($self.Panel, {}), $&"
+            }
         }
     ],
 
