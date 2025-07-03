@@ -48,10 +48,10 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 
 ## To Do
 
-- [ ] Poll less frequently if API server isn't running
 - [ ] Allow using "Authorize at first request" as an authorization strategy
 - [ ] Merge pre- and post-visual refresh styles
 - [ ] PR a websocket API to YTMDA and use that instead of polling
+- [x] Poll less frequently if API server isn't running
 - [x] Add compatibility with `SpotifyControls`
 - [x] Clean up code
 - [x] Add a setting to change the polling interval

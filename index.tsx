@@ -32,6 +32,11 @@ export default definePlugin({
             type: OptionType.NUMBER,
             default: 5000
         },
+        maxReconnectDelay: {
+            description: "Maximum delay (in milliseconds) between reconnection attempts",
+            type: OptionType.NUMBER,
+            default: 15000
+        },
         expandCover: {
             description: "Expand the song cover image on click",
             type: OptionType.BOOLEAN,

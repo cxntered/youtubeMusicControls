@@ -5,6 +5,7 @@
  */
 
 import { proxyLazy } from "@utils/lazy";
+import { Logger } from "@utils/Logger";
 import { Flux, FluxDispatcher } from "@webpack/common";
 import { Settings } from "Vencord";
 
@@ -30,8 +31,6 @@ export interface Song {
 
 export type Repeat = "NONE" | "ALL" | "ONE";
 
-const API_BASE = () => BASE_URL + ":" + Settings.plugins.YouTubeMusicControls.port + API_PATH;
-
 export const YouTubeMusicStore = proxyLazy(() => {
     const { Store } = Flux;
 
@@ -40,6 +39,8 @@ export const YouTubeMusicStore = proxyLazy(() => {
         public isPaused = true;
         public shuffle = false;
         public repeat: Repeat = "NONE";
+
+        private reconnectAttempts = 0;
 
         async togglePlayback() {
             await this.fetchApi("/toggle-play", { method: "POST" });
@@ -120,20 +121,22 @@ export const YouTubeMusicStore = proxyLazy(() => {
         }
 
         async refreshState() {
-            const [songData, shuffle, repeat] = await Promise.all([
-                this.fetchApi("/song").then(res => res.json()),
+            const songData = await this.fetchApi("/song").then(res => res.json());
+            this.song = songData;
+            this.isPaused = songData.isPaused;
+
+            const [shuffle, repeat] = await Promise.all([
                 this.fetchApi("/shuffle").then(res => res.json()),
                 this.fetchApi("/repeat-mode").then(res => res.json())
             ]);
-            this.song = songData;
-            this.isPaused = songData.isPaused;
             this.shuffle = shuffle.state;
             this.repeat = repeat.mode;
             this.emitChange();
         }
 
         async fetchApi(path: string, options?: RequestInit) {
-            const res = await fetch(new URL(API_BASE() + path), {
+            const apiBase = BASE_URL + ":" + Settings.plugins.YouTubeMusicControls.port + API_PATH;
+            const res = await fetch(new URL(apiBase + path), {
                 ...options,
                 headers: {
                     ...options?.headers
@@ -142,9 +145,22 @@ export const YouTubeMusicStore = proxyLazy(() => {
             if (res.ok) return res;
             else throw new Error(await res.text());
         }
+
+        async startPolling() {
+            try {
+                await this.refreshState();
+                this.reconnectAttempts = 0;
+                setTimeout(() => this.startPolling(), Settings.plugins.YouTubeMusicControls.pollInterval);
+            } catch (e) {
+                const delay = Math.min(Math.pow(2, this.reconnectAttempts) * 1000, Settings.plugins.YouTubeMusicControls.maxReconnectDelay);
+                new Logger("YouTubeMusicStore").warn("Failed to refresh state, retrying in", delay, "ms");
+                this.reconnectAttempts++;
+                setTimeout(() => this.startPolling(), delay);
+            }
+        }
     }
 
     const store = new YouTubeMusicStore(FluxDispatcher, {});
-    store.refreshState();
+    store.startPolling();
     return store;
 });

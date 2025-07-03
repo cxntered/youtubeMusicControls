@@ -352,14 +352,6 @@ export function Player() {
         }
     }, [isPaused]);
 
-    // refresh player state every pollInterval
-    useEffect(() => {
-        const interval = setInterval(() => {
-            YouTubeMusicStore.refreshState();
-        }, Settings.plugins.YouTubeMusicControls.pollInterval);
-        return () => clearInterval(interval);
-    }, [Settings.plugins.YouTubeMusicControls.pollInterval]);
-
     if (!song || shouldHide)
         return null;
 
