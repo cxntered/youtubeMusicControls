@@ -92,11 +92,6 @@
     transition: filter 0.2s;
 }
 
-#vc-ytmusic-album-image:hover {
-    filter: brightness(1.2);
-    cursor: pointer;
-}
-
 #vc-ytmusic-album-expanded-wrapper #vc-ytmusic-album-image {
     width: 100%;
     object-fit: contain;

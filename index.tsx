@@ -11,10 +11,15 @@ import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 import { Player } from "./components/PlayerComponent";
+import expandCoverStyle from "./styles/expandCover.css?managed";
 import hoverOnlyStyle from "./styles/hoverOnly.css?managed";
 
 function toggleHoverControls(value: boolean) {
     (value ? enableStyle : disableStyle)(hoverOnlyStyle);
+}
+
+function toggleExpandCover(value: boolean) {
+    (value ? enableStyle : disableStyle)(expandCoverStyle);
 }
 
 export default definePlugin({
@@ -40,7 +45,8 @@ export default definePlugin({
         expandCover: {
             description: "Expand the song cover image on click",
             type: OptionType.BOOLEAN,
-            default: true
+            default: true,
+            onChange: v => toggleExpandCover(v)
         },
         hoverControls: {
             description: "Show controls on hover",
@@ -59,7 +65,10 @@ export default definePlugin({
         }
     ],
 
-    start: () => toggleHoverControls(Settings.plugins.YouTubeMusicControls.hoverControls),
+    start: () => {
+        toggleHoverControls(Settings.plugins.YouTubeMusicControls.hoverControls);
+        toggleExpandCover(Settings.plugins.YouTubeMusicControls.expandCover);
+    },
 
     Panel() {
         return (
