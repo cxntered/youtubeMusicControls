@@ -20,11 +20,10 @@ import { SeekBar } from "./SeekBar";
 
 const cl = classNameFactory("vc-ytmusic-");
 
-function msToHuman(ms: number) {
-    const minutes = ms / 1000 / 60;
-    const m = Math.floor(minutes);
-    const s = Math.floor((minutes - m) * 60);
-    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+function formatSeconds(seconds: number) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
 
 function Svg(path: string, label: string) {
@@ -153,12 +152,12 @@ function YouTubeMusicSeekBar() {
         () => [YouTubeMusicStore.song!, YouTubeMusicStore.isPaused]
     );
 
-    const [position, setPosition] = useState(song.elapsedSeconds * 1000);
+    const [position, setPosition] = useState(song.elapsedSeconds);
     const positionRef = useRef(position);
 
     useEffect(() => {
         positionRef.current = position;
-        if (positionRef.current >= song.songDuration * 1000) {
+        if (positionRef.current >= song.songDuration) {
             // wait 1500ms because the song is not updated immediately
             setTimeout(() => {
                 YouTubeMusicStore.refreshState();
@@ -167,14 +166,14 @@ function YouTubeMusicSeekBar() {
     }, [position]);
 
     useEffect(() => {
-        setPosition(song.elapsedSeconds * 1000);
+        setPosition(song.elapsedSeconds);
     }, [song]);
 
     useEffect(() => {
         if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval !== 1000) {
             const interval = setInterval(() => {
-                if (positionRef.current < song.songDuration * 1000) {
-                    setPosition(p => p + 1000);
+                if (positionRef.current < song.songDuration) {
+                    setPosition(p => p + 1);
                 }
             }, 1000);
 
@@ -186,7 +185,7 @@ function YouTubeMusicSeekBar() {
 
     const onChange = (v: number) => {
         setPosition(v);
-        debouncedSeek(v / 1000);
+        debouncedSeek(v);
     };
 
     return (
@@ -196,22 +195,22 @@ function YouTubeMusicSeekBar() {
                 className={cl("progress-time") + " " + cl("time-left")}
                 aria-label="Progress"
             >
-                {msToHuman(position)}
+                {formatSeconds(position)}
             </Forms.FormText>
             <SeekBar
                 initialValue={position}
                 minValue={0}
-                maxValue={song.songDuration * 1000}
+                maxValue={song.songDuration}
                 onValueChange={onChange}
                 asValueChanges={onChange}
-                onValueRender={msToHuman}
+                onValueRender={formatSeconds}
             />
             <Forms.FormText
                 variant="text-xs/medium"
                 className={cl("progress-time") + " " + cl("time-right")}
                 aria-label="Total Duration"
             >
-                {msToHuman(song.songDuration * 1000)}
+                {formatSeconds(song.songDuration)}
             </Forms.FormText>
         </div>
     );
