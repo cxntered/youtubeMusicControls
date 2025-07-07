@@ -153,7 +153,7 @@ export const YouTubeMusicStore = proxyLazy(() => {
                 setTimeout(() => this.startPolling(), Settings.plugins.YouTubeMusicControls.pollInterval);
             } catch (e) {
                 const delay = Math.min(Math.pow(2, this.reconnectAttempts) * 1000, Settings.plugins.YouTubeMusicControls.maxReconnectDelay);
-                new Logger("YouTubeMusicStore").warn("Failed to refresh state, retrying in", delay, "ms");
+                new Logger("YouTubeMusicControls").warn("Failed to refresh state, retrying in", delay, "ms");
                 this.reconnectAttempts++;
                 setTimeout(() => this.startPolling(), delay);
             }

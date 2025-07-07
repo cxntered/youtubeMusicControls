@@ -170,7 +170,7 @@ function YouTubeMusicSeekBar() {
     }, [song]);
 
     useEffect(() => {
-        if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval !== 1000) {
+        if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval > 1000) {
             const interval = setInterval(() => {
                 if (positionRef.current < song.songDuration) {
                     setPosition(p => p + 1);
