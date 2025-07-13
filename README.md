@@ -48,7 +48,7 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 
 ## To Do
 
-- [ ] Allow using "Authorize at first request" as an authorization strategy
+- [ ] Allow using "Authorize at first request" as an authorization strategy (partially blocked by [this issue](https://github.com/th-ch/youtube-music/issues/3572))
 - [ ] PR a websocket API to YTMDA and use that instead of polling
 - [x] Merge pre- and post-visual refresh styles
 - [x] Poll less frequently if API server isn't running

@@ -1,10 +1,10 @@
 #vc-ytmusic-player {
     padding: 12px;
-    background: var(--bg-overlay-floating, var(--background-base-low, var(--background-secondary-alt)));
+    background: var(--bg-overlay-floating, var(--background-base-low, var(--background-base-lower-alt)));
     margin: 0;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    border-bottom: 1px solid var(--background-modifier-accent);
+    border-bottom: 1px solid var(--border-subtle);
 
     --vc-ytmusic-red: var(--ytmusic, red); /* so custom themes can easily change it */
     --vc-ytmusic-red-90: color-mix(in hsl, var(--vc-ytmusic-red), transparent 90%);
@@ -141,7 +141,7 @@
 
 #vc-ytmusic-progress-bar {
     position: relative;
-    color: var(--text-normal);
+    color: var(--text-default);
     width: 100%;
     margin: 0.5em 0;
     margin-bottom: 5px;
@@ -205,7 +205,7 @@
 
 .vc-ytmusic-fallback {
     padding: 0.5em;
-    color: var(--text-normal);
+    color: var(--text-default);
 }
 
 .vc-ytmusic-song-info-prefix {
@@ -213,5 +213,5 @@
 }
 
 .vc-ytmusic-secondary-song-info {
-        font-size: 12px;
+    font-size: 12px;
 }
