@@ -4,12 +4,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import { DataStore } from "@api/index";
+import { showNotification } from "@api/Notifications";
 import { proxyLazy } from "@utils/lazy";
 import { Logger } from "@utils/Logger";
 import { Flux, FluxDispatcher } from "@webpack/common";
 import { Settings } from "Vencord";
 
-import { API_PATH, BASE_URL } from "./constants";
+import { API_VERSION, BASE_URL } from "./constants";
 
 export interface Song {
     title: string;
@@ -31,6 +33,8 @@ export interface Song {
 
 export type Repeat = "NONE" | "ALL" | "ONE";
 
+const getApiHost = () => `${BASE_URL}:${Settings.plugins.YouTubeMusicControls.port}`;
+
 export const YouTubeMusicStore = proxyLazy(() => {
     const { Store } = Flux;
 
@@ -40,6 +44,8 @@ export const YouTubeMusicStore = proxyLazy(() => {
         public shuffle = false;
         public repeat: Repeat = "NONE";
 
+        private accessToken: string | null | undefined = undefined;
+        private isAuthenticating = false;
         private reconnectAttempts = 0;
 
         async togglePlayback() {
@@ -135,15 +141,66 @@ export const YouTubeMusicStore = proxyLazy(() => {
         }
 
         async fetchApi(path: string, options?: RequestInit) {
-            const apiBase = BASE_URL + ":" + Settings.plugins.YouTubeMusicControls.port + API_PATH;
-            const res = await fetch(new URL(apiBase + path), {
-                ...options,
-                headers: {
-                    ...options?.headers
-                }
-            });
+            const apiBase = `${getApiHost()}/api/${API_VERSION}`;
+
+            let res = await this.makeRequest(apiBase + path, options);
+
+            if (res.status === 401) {
+                await this.authenticate();
+                res = await this.makeRequest(apiBase + path, options);
+            }
+
             if (res.ok) return res;
             else throw new Error(await res.text());
+        }
+
+        private async makeRequest(url: string, options?: RequestInit) {
+            const headers = new Headers(options?.headers);
+
+            if (this.accessToken === undefined) {
+                this.accessToken = (await DataStore.get("YouTubeMusicControls_accessToken")) ?? null;
+            }
+
+            if (this.accessToken) {
+                headers.set("Authorization", `Bearer ${this.accessToken}`);
+            }
+
+            return await fetch(new URL(url), {
+                ...options,
+                headers
+            });
+        }
+
+        private async authenticate() {
+            if (this.isAuthenticating) return;
+
+            this.isAuthenticating = true;
+            try {
+                const res = await fetch(new URL(`${getApiHost()}/auth/YouTubeMusicControls`), {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" }
+                });
+
+                if (res.ok) {
+                    const authData = await res.json();
+                    this.accessToken = authData.accessToken;
+                    await DataStore.set("YouTubeMusicControls_accessToken", authData.accessToken);
+                } else {
+                    throw new Error("Authentication failed");
+                }
+            } catch (error) {
+                showNotification({
+                    title: "YouTubeMusicControls",
+                    body: "Authentication failed. Did you deny the request?",
+                    color: "var(--status-danger, red)",
+                    noPersist: true
+                });
+                new Logger("YouTubeMusicControls").error(error);
+                this.accessToken = null;
+                await DataStore.del("YouTubeMusicControls_accessToken");
+            } finally {
+                this.isAuthenticating = false;
+            }
         }
 
         async startPolling() {

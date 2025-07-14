@@ -12,7 +12,7 @@ Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plug
 
 ## Usage
 
-Firstly, make sure you are using the [YouTube Music Desktop App](https://github.com/th-ch/youtube-music). Enable the `API Server [Beta]` plugin, set the "Authorization strategy" to "No authorization" and keep all other settings as default.
+Firstly, make sure you are using the [YouTube Music Desktop App](https://github.com/th-ch/youtube-music). Enable the `API Server [Beta]` plugin, set the "Authorization strategy" to either "No authorization" (recommended) or "Authorize at first request" and keep all other settings as default.
 
 Then, following [this guide](https://docs.vencord.dev/installing/custom-plugins) to setup Vencord for custom plugins, `git clone` this repository into the `src/userplugins` directory of your Vencord installation, run `pnpm build` to build Vencord, inject with `pnpm inject`, and restart Discord.
 
@@ -26,9 +26,8 @@ Make sure the `API Server [Beta]` plugin is enabled, and that its using the foll
 
 - **Hostname:** `0.0.0.0`
 - **Port:** `26538`
-- **Authorization strategy:** `No authorization`
 
-If you are using a different port, you can change it in the plugin settings. If it still doesn't work, [make an issue](https://github.com/cxntered/youtubeMusicControls/issues).
+If you have the authorization strategy set to "Authorize at first request", make sure to accept the authorization request in the YouTube Music Desktop App pop-up when prompted, and if you are using a different port, you can change it in the plugin settings. If it still doesn't work, [make an issue](https://github.com/cxntered/youtubeMusicControls/issues).
 
 ### How do I style the player?
 
@@ -48,8 +47,8 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 
 ## To Do
 
-- [ ] Allow using "Authorize at first request" as an authorization strategy (partially blocked by [this issue](https://github.com/th-ch/youtube-music/issues/3572))
 - [ ] PR a websocket API to YTMDA and use that instead of polling
+- [x] Allow using "Authorize at first request" as an authorization strategy
 - [x] Merge pre- and post-visual refresh styles
 - [x] Poll less frequently if API server isn't running
 - [x] Add compatibility with `SpotifyControls`
