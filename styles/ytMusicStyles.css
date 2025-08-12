@@ -6,22 +6,31 @@
     border-top-right-radius: 10px;
     border-bottom: 1px solid var(--border-subtle);
 
-    --vc-ytmusic-red: var(--ytmusic, red); /* so custom themes can easily change it */
+    /* so custom themes can easily change it */
+    --vc-ytmusic-red: var(--ytmusic, red);
     --vc-ytmusic-red-90: color-mix(in hsl, var(--vc-ytmusic-red), transparent 90%);
     --vc-ytmusic-red-80: color-mix(in hsl, var(--vc-ytmusic-red), transparent 80%);
 }
 
+.theme-light #vc-ytmusic-player {
+    background: var(--bg-overlay-3, var(--background-base-lower-alt));
+}
+
+.theme-dark #vc-ytmusic-player {
+    background: var(--bg-overlay-1, var(--background-base-lower-alt));
+}
+
 .vc-ytmusic-button {
+    margin: 0 2px;
+    border-radius: var(--radius-sm);
     background: none;
     color: var(--interactive-normal);
     padding: 0;
     width: 32px;
     height: 32px;
-    border-radius: var(--radius-sm);
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 2px;
 }
 
 .vc-ytmusic-button:hover {
@@ -44,16 +53,16 @@
     filter: brightness(1.3);
 } */
 
-.vc-ytmusic-shuffle-on,
 .vc-ytmusic-repeat-context,
-.vc-ytmusic-repeat-track {
+.vc-ytmusic-repeat-track,
+.vc-ytmusic-shuffle-on {
     background-color: var(--vc-ytmusic-red-90);
     color: var(--vc-ytmusic-red);
 }
 
-.vc-ytmusic-shuffle-on:hover,
 .vc-ytmusic-repeat-context:hover,
-.vc-ytmusic-repeat-track:hover {
+.vc-ytmusic-repeat-track:hover,
+.vc-ytmusic-shuffle-on:hover {
     background-color: var(--vc-ytmusic-red-80);
     color: var(--vc-ytmusic-red);
 }
@@ -77,6 +86,14 @@
 .vc-ytmusic-button-row {
     justify-content: center;
     margin-top: 14px;
+}
+
+.vc-ytmusic-secondary-song-info {
+    font-size: 12px;
+}
+
+.vc-ytmusic-song-info-prefix {
+    display: none;
 }
 
 #vc-ytmusic-info-wrapper {
@@ -125,7 +142,7 @@
 .vc-ytmusic-album {
     font-size: 12px;
     text-decoration: none;
-    color: var(--header-secondary);
+    color: var(--header-primary);
 }
 
 .vc-ytmusic-comma {
@@ -206,12 +223,4 @@
 .vc-ytmusic-fallback {
     padding: 0.5em;
     color: var(--text-default);
-}
-
-.vc-ytmusic-song-info-prefix {
-    display: none;
-}
-
-.vc-ytmusic-secondary-song-info {
-    font-size: 12px;
 }
