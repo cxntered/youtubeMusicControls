@@ -197,6 +197,7 @@ export const YouTubeMusicStore = proxyLazy(() => {
                 case DataTypes.VideoChanged:
                     this.song = data.song;
                     this.position = data.position;
+                    this.isPlaying = !data.song.isPaused;
                     break;
 
                 case DataTypes.PlayerStateChanged:
