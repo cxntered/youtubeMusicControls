@@ -200,7 +200,10 @@ function YouTubeMusicSeekBar() {
 }
 
 function AlbumContextMenu({ song }: { song: SongInfo; }) {
-    const volume = useStateFromStores([YouTubeMusicStore], () => YouTubeMusicStore.volume);
+    const [volume, muted] = useStateFromStores(
+        [YouTubeMusicStore],
+        () => [YouTubeMusicStore.volume, YouTubeMusicStore.muted]
+    );
 
     return (
         <Menu.Menu
@@ -229,6 +232,13 @@ function AlbumContextMenu({ song }: { song: SongInfo; }) {
                         onChange={debounce((v: number) => YouTubeMusicStore.setVolume(v))}
                     />
                 )}
+            />
+            <Menu.MenuCheckboxItem
+                id="ytmusic-mute"
+                key="ytmusic-mute"
+                label="Mute"
+                checked={muted}
+                action={() => YouTubeMusicStore.toggleMute()}
             />
         </Menu.Menu>
     );
