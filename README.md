@@ -4,7 +4,7 @@
 
 A [Vencord](https://vencord.dev) plugin that adds a [YouTube Music](https://music.youtube.com) player above the account panel in Discord.
 
-Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plugin built into Vencord. **Requires** the [YouTube Music Desktop App](https://github.com/th-ch/youtube-music) to be running.
+Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plugin built into Vencord. **Requires** the [YouTube Music Desktop App](https://th-ch.github.io/youtube-music) to be running.
 
 ![Showcase](images/showcase.png)
 
@@ -12,7 +12,7 @@ Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plug
 
 ## Usage
 
-Firstly, make sure you are using the [YouTube Music Desktop App](https://github.com/th-ch/youtube-music). Enable the `API Server [Beta]` plugin, set the "Authorization strategy" to either "No authorization" (recommended) or "Authorize at first request" and keep all other settings as default.
+Firstly, make sure you are using the [YouTube Music Desktop App](https://th-ch.github.io/youtube-music). Enable the `API Server [Beta]` plugin, set the "Authorization strategy" to either "No authorization" (recommended) or "Authorize at first request" and keep all other settings as default.
 
 Then, following [this guide](https://docs.vencord.dev/installing/custom-plugins) to setup Vencord for custom plugins, `git clone` this repository into the `src/userplugins` directory of your Vencord installation, run `pnpm build` to build Vencord, inject with `pnpm inject`, and restart Discord.
 
@@ -33,21 +33,13 @@ If you have the authorization strategy set to "Authorize at first request", make
 
 The player uses the exact same styles as the `SpotifyControls` plugin, except every instance of `spotify` is renamed to `ytmusic`.
 
-### Why does it make requests so frequently?
-
-...yeah 😭
-
-Since the YouTube Music Desktop App does not provide a websocket API, the plugin has to poll the API periodically to get the current song and player state. This is ~~probably~~ definitely not ideal whatsoever, but unless I'm stupid, it is the only way to reliably get the current state of the player as it could become desynced if the user changes anything in the YouTube Music Desktop App.
-
-If you don't really care about the player state being 100% accurate, you can change the polling interval in the plugin settings (by default its 5000ms).
-
 ## Disclaimer
 
 This is my first Vencord plugin, so it is probably (definitely) not the best code ever. If you have any issues, suggestions or improvements, feel free to [open an issue](https://github.com/cxntered/youtubeMusicControls/issues) or [make a pull request](https://github.com/cxntered/youtubeMusicControls/pulls).
 
 ## To Do
 
-- [ ] PR a websocket API to YTMDA and use that instead of polling
+- [x] ~~PR a websocket API to YTMD~~ ([someone else did this](https://github.com/th-ch/youtube-music/pull/3707) :p) and use that instead of polling
 - [x] Allow using "Authorize at first request" as an authorization strategy
 - [x] Merge pre- and post-visual refresh styles
 - [x] Poll less frequently if API server isn't running

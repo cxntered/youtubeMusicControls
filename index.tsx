@@ -11,6 +11,7 @@ import { Devs } from "@utils/constants";
 import definePlugin, { OptionType } from "@utils/types";
 
 import { Player } from "./components/PlayerComponent";
+import { YouTubeMusicStore } from "./lib/YouTubeMusicStore";
 import expandCoverStyle from "./styles/expandCover.css?managed";
 import hoverOnlyStyle from "./styles/hoverOnly.css?managed";
 
@@ -31,11 +32,6 @@ export default definePlugin({
             description: "YouTube Music API server's port",
             type: OptionType.NUMBER,
             default: 26538
-        },
-        pollInterval: {
-            description: "Polling interval (in milliseconds) to update the player state",
-            type: OptionType.NUMBER,
-            default: 5000
         },
         maxReconnectDelay: {
             description: "Maximum delay (in milliseconds) between reconnection attempts",
@@ -66,8 +62,13 @@ export default definePlugin({
     ],
 
     start: () => {
+        YouTubeMusicStore.connectWebSocket();
         toggleHoverControls(Settings.plugins.YouTubeMusicControls.hoverControls);
         toggleExpandCover(Settings.plugins.YouTubeMusicControls.expandCover);
+    },
+
+    stop: () => {
+        YouTubeMusicStore.disconnectWebSocket();
     },
 
     Panel() {

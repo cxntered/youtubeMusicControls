@@ -13,9 +13,10 @@ import { ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
 import { debounce } from "@shared/debounce";
 import { openImageModal } from "@utils/discord";
 import { classes, copyWithToast } from "@utils/misc";
-import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useRef, useState, useStateFromStores } from "@webpack/common";
+import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
-import { Song, YouTubeMusicStore } from "../lib/YouTubeMusicStore";
+import { SongInfo } from "../lib/types";
+import { YouTubeMusicStore } from "../lib/YouTubeMusicStore";
 import { SeekBar } from "./SeekBar";
 
 const cl = classNameFactory("vc-ytmusic-");
@@ -105,9 +106,9 @@ function makeContextMenu(name: string, url: string) {
 }
 
 function Controls() {
-    const [isPaused, shuffle, repeat] = useStateFromStores(
+    const [isPlaying, shuffle, repeat] = useStateFromStores(
         [YouTubeMusicStore],
-        () => [YouTubeMusicStore.isPaused, YouTubeMusicStore.shuffle, YouTubeMusicStore.repeat]
+        () => [YouTubeMusicStore.isPlaying, YouTubeMusicStore.shuffle, YouTubeMusicStore.repeat]
     );
 
     const repeatClassName = (() => {
@@ -131,7 +132,7 @@ function Controls() {
                 <SkipPrev />
             </Button>
             <Button onClick={() => YouTubeMusicStore.togglePlayback()}>
-                {isPaused ? <PlayButton /> : <PauseButton />}
+                {isPlaying ? <PauseButton /> : <PlayButton />}
             </Button>
             <Button onClick={() => YouTubeMusicStore.nextSong()}>
                 <SkipNext />
@@ -153,41 +154,17 @@ const debouncedSeek = debounce((v: number) => {
 });
 
 function YouTubeMusicSeekBar() {
-    const [song, isPaused] = useStateFromStores(
+    const { songDuration } = YouTubeMusicStore.song!;
+    const [storePosition] = useStateFromStores(
         [YouTubeMusicStore],
-        () => [YouTubeMusicStore.song!, YouTubeMusicStore.isPaused]
+        () => [YouTubeMusicStore.position]
     );
 
-    const [position, setPosition] = useState(song.elapsedSeconds);
-    const positionRef = useRef(position);
+    const [position, setPosition] = useState(storePosition);
 
     useEffect(() => {
-        positionRef.current = position;
-        if (positionRef.current >= song.songDuration) {
-            // wait 1500ms because the song is not updated immediately
-            setTimeout(() => {
-                YouTubeMusicStore.refreshState();
-            }, 1500);
-        }
-    }, [position]);
-
-    useEffect(() => {
-        setPosition(song.elapsedSeconds);
-    }, [song]);
-
-    useEffect(() => {
-        if (!isPaused && Settings.plugins.YouTubeMusicControls.pollInterval > 1000) {
-            const interval = setInterval(() => {
-                if (positionRef.current < song.songDuration) {
-                    setPosition(p => p + 1);
-                }
-            }, 1000);
-
-            return () => {
-                clearInterval(interval);
-            };
-        }
-    }, [isPaused, song]);
+        setPosition(storePosition);
+    }, [storePosition]);
 
     const onChange = (v: number) => {
         setPosition(v);
@@ -206,7 +183,7 @@ function YouTubeMusicSeekBar() {
             <SeekBar
                 initialValue={position}
                 minValue={0}
-                maxValue={song.songDuration}
+                maxValue={songDuration}
                 onValueChange={onChange}
                 asValueChanges={onChange}
                 onValueRender={formatSeconds}
@@ -216,22 +193,14 @@ function YouTubeMusicSeekBar() {
                 className={cl("progress-time") + " " + cl("time-right")}
                 aria-label="Total Duration"
             >
-                {formatSeconds(song.songDuration)}
+                {formatSeconds(songDuration)}
             </Forms.FormText>
         </div>
     );
 }
 
-function AlbumContextMenu({ song }: { song: Song; }) {
-    const [volume, setVolume] = useState<number | null>(null);
-
-    useEffect(() => {
-        YouTubeMusicStore.fetchApi("/volume")
-            .then(res => res.json())
-            .then(({ state }) => setVolume(state));
-    }, []);
-
-    if (volume === null) return null;
+function AlbumContextMenu({ song }: { song: SongInfo; }) {
+    const volume = useStateFromStores([YouTubeMusicStore], () => YouTubeMusicStore.volume);
 
     return (
         <Menu.Menu
@@ -243,7 +212,7 @@ function AlbumContextMenu({ song }: { song: Song; }) {
                 key="view-cover"
                 id="view-cover"
                 label="View Album Cover"
-                action={() => openImageModal({ url: song.imageSrc })}
+                action={() => song.imageSrc && openImageModal({ url: song.imageSrc })}
                 icon={ImageIcon}
             />
             <Menu.MenuControlItem
@@ -265,7 +234,9 @@ function AlbumContextMenu({ song }: { song: Song; }) {
     );
 }
 
-function makeLinkProps(name: string, url: string) {
+function makeLinkProps(name: string, url: string | undefined) {
+    if (!url) return {};
+
     return {
         role: "link",
         onClick: () => VencordNative.native.openExternal(url),
@@ -273,7 +244,7 @@ function makeLinkProps(name: string, url: string) {
     } satisfies React.HTMLAttributes<HTMLElement>;
 }
 
-function Info({ song }: { song: Song; }) {
+function Info({ song }: { song: SongInfo; }) {
     const img = song.imageSrc;
 
     const [coverExpanded, setCoverExpanded] = useState(false);
@@ -317,7 +288,12 @@ function Info({ song }: { song: Song; }) {
                 {song.artist && (
                     <Forms.FormText variant="text-sm/normal" className={cl(["ellipoverflow", "secondary-song-info"])}>
                         <span className={cl("song-info-prefix")}>by&nbsp;</span>
-                        <span className={cl("artist")} style={{ fontSize: "inherit" }} title={song.artist}>
+                        <span
+                            className={cl("artist")}
+                            style={{ fontSize: "inherit" }}
+                            title={song.artist}
+                            {...makeLinkProps("Artist", song.artistUrl)}
+                        >
                             {song.artist}
                         </span>
                     </Forms.FormText>
@@ -341,9 +317,9 @@ function Info({ song }: { song: Song; }) {
 }
 
 export function Player() {
-    const [song, isPaused] = useStateFromStores(
+    const [song, isPlaying] = useStateFromStores(
         [YouTubeMusicStore],
-        () => [YouTubeMusicStore.song, YouTubeMusicStore.isPaused]
+        () => [YouTubeMusicStore.song, YouTubeMusicStore.isPlaying]
     );
 
     const [shouldHide, setShouldHide] = useState(false);
@@ -351,11 +327,11 @@ export function Player() {
     // hide player after 5 minutes of inactivity
     useEffect(() => {
         setShouldHide(false);
-        if (isPaused) {
+        if (!isPlaying) {
             const timeout = setTimeout(() => setShouldHide(true), 1000 * 60 * 5);
             return () => clearTimeout(timeout);
         }
-    }, [isPaused]);
+    }, [isPlaying]);
 
     if (!song || shouldHide)
         return null;
