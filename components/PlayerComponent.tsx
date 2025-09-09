@@ -9,7 +9,7 @@ import "../styles/ytMusicStyles.css";
 import { Settings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import { Flex } from "@components/Flex";
-import { ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
+import { CopyIcon, ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
 import { debounce } from "@shared/debounce";
 import { openImageModal } from "@utils/discord";
 import { classes, copyWithToast } from "@utils/misc";
@@ -72,37 +72,33 @@ function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     );
 }
 
-function CopyContextMenu({ name, url }: { name: string; url: string; }) {
-    const copyId = `ytmusic-copy-${name}`;
-    const openId = `ytmusic-open-${name}`;
-
+function CopyContextMenu({ name, type, path }: { type: string; name: string; path: string; }) {
     return (
         <Menu.Menu
-            navId={`ytmusic-${name}-menu`}
-            onClose={() => FluxDispatcher.dispatch({ type: "CONTEXT_MENU_CLOSE" })}
+            navId={"vc-ytmusic-menu"}
+            onClose={ContextMenuApi.closeContextMenu}
             aria-label={`YouTube Music ${name} Menu`}
         >
             <Menu.MenuItem
-                key={copyId}
-                id={copyId}
-                label={`Copy ${name} Link`}
-                action={() => copyWithToast(url)}
+                id="vc-ytmusic-copy-name"
+                label={`Copy ${type} Name`}
+                action={() => copyWithToast(name)}
+                icon={CopyIcon}
+            />
+            <Menu.MenuItem
+                id="vc-ytmusic-copy-link"
+                label={`Copy ${type} Link`}
+                action={() => copyWithToast(path)}
                 icon={LinkIcon}
             />
             <Menu.MenuItem
-                key={openId}
-                id={openId}
-                label={`Open ${name} in YouTube Music`}
-                action={() => VencordNative.native.openExternal(url)}
+                id="vc-ytmusic-open"
+                label={`Open ${type} in YouTube Music`}
+                action={() => VencordNative.native.openExternal(path)}
                 icon={OpenExternalIcon}
             />
         </Menu.Menu>
     );
-}
-
-function makeContextMenu(name: string, url: string) {
-    return (e: React.MouseEvent<HTMLElement, MouseEvent>) =>
-        ContextMenuApi.openContextMenu(e, () => <CopyContextMenu name={name} url={url} />);
 }
 
 function Controls() {
@@ -244,13 +240,14 @@ function AlbumContextMenu({ song }: { song: SongInfo; }) {
     );
 }
 
-function makeLinkProps(name: string, url: string | undefined) {
-    if (!url) return {};
+function makeLinkProps(type: "Song" | "Artist" | "Album", name: string, path: string | undefined) {
+    if (!path) return {};
 
     return {
         role: "link",
-        onClick: () => VencordNative.native.openExternal(url),
-        onContextMenu: makeContextMenu(name, url)
+        onClick: () => VencordNative.native.openExternal(path),
+        onContextMenu: e =>
+            ContextMenuApi.openContextMenu(e, () => <CopyContextMenu type={type} name={name} path={path} />)
     } satisfies React.HTMLAttributes<HTMLElement>;
 }
 
@@ -291,7 +288,7 @@ function Info({ song }: { song: SongInfo; }) {
                     id={cl("song-title")}
                     className={cl("ellipoverflow")}
                     title={song.title}
-                    {...makeLinkProps("Song", song.url)}
+                    {...makeLinkProps("Song", song.title, song.url)}
                 >
                     {song.title}
                 </Forms.FormText>
@@ -302,7 +299,7 @@ function Info({ song }: { song: SongInfo; }) {
                             className={cl("artist")}
                             style={{ fontSize: "inherit" }}
                             title={song.artist}
-                            {...makeLinkProps("Artist", song.artistUrl)}
+                            {...makeLinkProps("Artist", song.artist, song.artistUrl)}
                         >
                             {song.artist}
                         </span>
