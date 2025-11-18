@@ -164,26 +164,26 @@
     margin-bottom: 5px;
 }
 
-#vc-ytmusic-progress-bar > [class^="slider"] {
+#vc-ytmusic-progress-bar [class^="slider"] {
     flex-grow: 1;
     width: 100%;
     padding: 0 !important;
 }
 
-#vc-ytmusic-progress-bar > [class^="slider"] [class^="bar"] {
+#vc-ytmusic-progress-bar [class^="slider"] [class^="bar"] {
     height: 3px !important;
     top: calc(12px - 4px / 2 + var(--bar-offset));
 }
 
-#vc-ytmusic-progress-bar > [class^="slider"] [class^="barFill"] {
+#vc-ytmusic-progress-bar [class^="slider"] [class^="barFill"] {
     background-color: var(--interactive-active);
 }
 
-#vc-ytmusic-progress-bar > [class^="slider"]:hover [class^="barFill"] {
+#vc-ytmusic-progress-bar [class^="slider"]:hover [class^="barFill"] {
     background-color: var(--vc-ytmusic-red);
 }
 
-#vc-ytmusic-progress-bar > [class^="slider"] [class^="grabber"] {
+#vc-ytmusic-progress-bar [class^="slider"] [class^="grabber"] {
     /* these importants are necessary, it applies a width and height through inline styles */
     height: 16px !important;
     width: 16px !important;
@@ -196,7 +196,7 @@
     transition: opacity 0.1s;
 }
 
-#vc-ytmusic-progress-bar:hover > [class^="slider"] [class^="grabber"] {
+#vc-ytmusic-progress-bar [class^="slider"]:hover [class^="grabber"] {
     opacity: 1;
 }
 
