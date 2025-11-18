@@ -10,10 +10,12 @@ import { Settings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import { Flex } from "@components/Flex";
 import { CopyIcon, ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
+import { Paragraph } from "@components/Paragraph";
+import { Span } from "@components/Span";
 import { debounce } from "@shared/debounce";
 import { openImageModal } from "@utils/discord";
 import { classes, copyWithToast } from "@utils/misc";
-import { ContextMenuApi, FluxDispatcher, Forms, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
+import { ContextMenuApi, FluxDispatcher, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
 import { SongInfo } from "../lib/types";
 import { YouTubeMusicStore } from "../lib/YouTubeMusicStore";
@@ -169,13 +171,14 @@ function YouTubeMusicSeekBar() {
 
     return (
         <div id={cl("progress-bar")}>
-            <Forms.FormText
-                variant="text-xs/medium"
+            <Span
+                size="xs"
+                weight="medium"
                 className={cl("progress-time") + " " + cl("time-left")}
                 aria-label="Progress"
             >
                 {formatSeconds(position)}
-            </Forms.FormText>
+            </Span>
             <SeekBar
                 initialValue={position}
                 minValue={0}
@@ -184,13 +187,14 @@ function YouTubeMusicSeekBar() {
                 asValueChanges={onChange}
                 onValueRender={formatSeconds}
             />
-            <Forms.FormText
-                variant="text-xs/medium"
+            <Span
+                size="xs"
+                weight="medium"
                 className={cl("progress-time") + " " + cl("time-right")}
                 aria-label="Total Duration"
             >
                 {formatSeconds(songDuration)}
-            </Forms.FormText>
+            </Span>
         </div>
     );
 }
@@ -283,17 +287,17 @@ function Info({ song }: { song: SongInfo; }) {
         <div id={cl("info-wrapper")}>
             {i}
             <div id={cl("titles")}>
-                <Forms.FormText
-                    variant="text-sm/semibold"
+                <Paragraph
+                    weight="semibold"
                     id={cl("song-title")}
                     className={cl("ellipoverflow")}
                     title={song.title}
                     {...makeLinkProps("Song", song.title, song.url)}
                 >
                     {song.title}
-                </Forms.FormText>
+                </Paragraph>
                 {song.artist && (
-                    <Forms.FormText variant="text-sm/normal" className={cl(["ellipoverflow", "secondary-song-info"])}>
+                    <Paragraph className={cl(["ellipoverflow", "secondary-song-info"])}>
                         <span className={cl("song-info-prefix")}>by&nbsp;</span>
                         <span
                             className={cl("artist")}
@@ -303,10 +307,10 @@ function Info({ song }: { song: SongInfo; }) {
                         >
                             {song.artist}
                         </span>
-                    </Forms.FormText>
+                    </Paragraph>
                 )}
                 {song.album && (
-                    <Forms.FormText variant="text-sm/normal" className={cl(["ellipoverflow", "secondary-song-info"])}>
+                    <Paragraph className={cl(["ellipoverflow", "secondary-song-info"])}>
                         <span className={cl("song-info-prefix")}>on&nbsp;</span>
                         <span
                             id={cl("album-title")}
@@ -316,7 +320,7 @@ function Info({ song }: { song: SongInfo; }) {
                         >
                             {song.album}
                         </span>
-                    </Forms.FormText>
+                    </Paragraph>
                 )}
             </div>
         </div>
