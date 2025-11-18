@@ -74,7 +74,7 @@ function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     );
 }
 
-function CopyContextMenu({ name, type, path }: { type: string; name: string; path: string; }) {
+function CopyContextMenu({ name, type, path }: { type: string; name: string; path?: string; }) {
     return (
         <Menu.Menu
             navId={"vc-ytmusic-menu"}
@@ -87,18 +87,18 @@ function CopyContextMenu({ name, type, path }: { type: string; name: string; pat
                 action={() => copyWithToast(name)}
                 icon={CopyIcon}
             />
-            <Menu.MenuItem
+            {path && <Menu.MenuItem
                 id="vc-ytmusic-copy-link"
                 label={`Copy ${type} Link`}
                 action={() => copyWithToast(path)}
                 icon={LinkIcon}
-            />
-            <Menu.MenuItem
+            />}
+            {path && <Menu.MenuItem
                 id="vc-ytmusic-open"
                 label={`Open ${type} in YouTube Music`}
                 action={() => VencordNative.native.openExternal(path)}
                 icon={OpenExternalIcon}
-            />
+            />}
         </Menu.Menu>
     );
 }
@@ -244,8 +244,11 @@ function AlbumContextMenu({ song }: { song: SongInfo; }) {
     );
 }
 
-function makeLinkProps(type: "Song" | "Artist" | "Album", name: string, path: string | undefined) {
-    if (!path) return {};
+function makeLinkProps(type: "Song" | "Artist" | "Album", name: string, path?: string) {
+    if (!path) return {
+        onContextMenu: e =>
+            ContextMenuApi.openContextMenu(e, () => <CopyContextMenu type={type} name={name} />)
+    } satisfies React.HTMLAttributes<HTMLElement>;
 
     return {
         role: "link",
@@ -317,6 +320,7 @@ function Info({ song }: { song: SongInfo; }) {
                             className={cl("album")}
                             style={{ fontSize: "inherit" }}
                             title={song.album}
+                            {...makeLinkProps("Album", song.album)}
                         >
                             {song.album}
                         </span>
