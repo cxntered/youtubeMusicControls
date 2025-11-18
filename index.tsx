@@ -29,7 +29,7 @@ export default definePlugin({
     authors: [Devs.Ven, Devs.afn, Devs.KraXen72, Devs.Av32000, Devs.nin0dev, { name: "cxntered", id: 638695599893643274n }],
     options: {
         port: {
-            description: "YouTube Music API server's port",
+            description: "Pear Desktop API server's port",
             type: OptionType.NUMBER,
             default: 26538
         },

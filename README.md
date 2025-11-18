@@ -4,7 +4,8 @@
 
 A [Vencord](https://vencord.dev) plugin that adds a [YouTube Music](https://music.youtube.com) player above the account panel in Discord.
 
-Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plugin built into Vencord. **Requires** the [YouTube Music Desktop App](https://th-ch.github.io/youtube-music) to be running.
+Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plugin built into Vencord. <br />
+**Requires [Pear Desktop](https://github.com/pear-devs/pear-desktop)** (f.k.a. YouTube Music Desktop App) **to be running.**
 
 ![Showcase](images/showcase.png)
 
@@ -12,11 +13,11 @@ Based on the [SpotifyControls](https://vencord.dev/plugins/SpotifyControls) plug
 
 ## Usage
 
-Firstly, make sure you are using the [YouTube Music Desktop App](https://th-ch.github.io/youtube-music). Enable the `API Server [Beta]` plugin, set the "Authorization strategy" to either "No authorization" (recommended) or "Authorize at first request" and keep all other settings as default.
+Firstly, make sure you are using the latest release of [Pear Desktop](https://github.com/pear-devs/pear-desktop/releases/latest). Enable the `API Server [Beta]` plugin, set the "Authorization strategy" to either "No authorization" (recommended) or "Authorize at first request" and keep all other settings as default.
 
 Then, following [this guide](https://docs.vencord.dev/installing/custom-plugins) to setup Vencord for custom plugins, `git clone` this repository into the `src/userplugins` directory of your Vencord installation, run `pnpm build` to build Vencord, inject with `pnpm inject`, and restart Discord.
 
-After that, you can enable the plugin in the Vencord settings under "Plugins" and it should start working, as long as you have the YouTube Music Desktop App running.
+After that, you can enable the plugin in the Vencord settings under "Plugins" and it should start working, as long as you have Pear Desktop running.
 
 ## Questions and Answers
 
@@ -27,7 +28,7 @@ Make sure the `API Server [Beta]` plugin is enabled, and that its using the foll
 - **Hostname:** `0.0.0.0`
 - **Port:** `26538`
 
-If you have the authorization strategy set to "Authorize at first request", make sure to accept the authorization request in the YouTube Music Desktop App pop-up when prompted, and if you are using a different port, you can change it in the plugin settings. If it still doesn't work, [make an issue](https://github.com/cxntered/youtubeMusicControls/issues).
+If you have the authorization strategy set to "Authorize at first request", make sure to accept the authorization request in the Pear Desktop pop-up when prompted, and if you are using a different port, you can change it in the plugin settings. If it still doesn't work, [make an issue](https://github.com/cxntered/youtubeMusicControls/issues).
 
 ### How do I style the player?
 
@@ -39,7 +40,7 @@ This is my first Vencord plugin, so it is probably (definitely) not the best cod
 
 ## To Do
 
-- [x] ~~PR a websocket API to YTMD~~ ([someone else did this](https://github.com/th-ch/youtube-music/pull/3707) :p) and use that instead of polling
+- [x] ~~PR a websocket API to YTMD~~ ([someone else did this](https://github.com/pear-devs/pear-desktop/pull/3707) :p) and use that instead of polling
 - [x] Allow using "Authorize at first request" as an authorization strategy
 - [x] Merge pre- and post-visual refresh styles
 - [x] Poll less frequently if API server isn't running
