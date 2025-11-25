@@ -54,7 +54,9 @@ export default definePlugin({
         {
             find: 'setProperty("--custom-app-panels-height"',
             replacement: {
+                // (0, react.jsx)(_.Z, { section: _._.ACCOUNT_PANEL
                 match: /(\(0,\i\.jsx\))\(\i\.Z,\{section:\i.\i.ACCOUNT_PANEL/,
+                // (0, react.jsx)(Panel, {})(0, react.jsx)(_.Z, { section: _._.ACCOUNT_PANEL
                 replace: "$1($self.Panel, {}), $&"
             }
         }

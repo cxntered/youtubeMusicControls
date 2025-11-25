@@ -43,3 +43,12 @@ export enum DataTypes {
     RepeatChanged = "REPEAT_CHANGED",
     ShuffleChanged = "SHUFFLE_CHANGED",
 }
+
+export type WebSocketMessage =
+    | { type: DataTypes.PlayerInfo; song: SongInfo; isPlaying: boolean; muted: boolean; position: number; volume: number; repeat: RepeatMode; shuffle: boolean; }
+    | { type: DataTypes.VideoChanged; song: SongInfo; position: number; }
+    | { type: DataTypes.PlayerStateChanged; isPlaying: boolean; position: number; }
+    | { type: DataTypes.PositionChanged; position: number; }
+    | { type: DataTypes.VolumeChanged; volume: number; muted: boolean; }
+    | { type: DataTypes.RepeatChanged; repeat: RepeatMode; }
+    | { type: DataTypes.ShuffleChanged; shuffle: boolean; };
