@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { Settings } from "@api/Settings";
+import { definePluginSettings } from "@api/Settings";
 import { disableStyle, enableStyle } from "@api/Styles";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs } from "@utils/constants";
@@ -15,42 +15,41 @@ import { YouTubeMusicStore } from "./lib/YouTubeMusicStore";
 import expandCoverStyle from "./styles/expandCover.css?managed";
 import hoverOnlyStyle from "./styles/hoverOnly.css?managed";
 
-function toggleHoverControls(value: boolean) {
-    (value ? enableStyle : disableStyle)(hoverOnlyStyle);
+function toggleStyle(style: string, value: boolean) {
+    (value ? enableStyle : disableStyle)(style);
 }
 
-function toggleExpandCover(value: boolean) {
-    (value ? enableStyle : disableStyle)(expandCoverStyle);
-}
+export const settings = definePluginSettings({
+    port: {
+        description: "Pear Desktop API server's port",
+        type: OptionType.NUMBER,
+        default: 26538
+    },
+    maxReconnectDelay: {
+        description: "Maximum delay (in milliseconds) between reconnection attempts",
+        type: OptionType.NUMBER,
+        default: 15000
+    },
+    expandCover: {
+        description: "Expand the song cover image on click",
+        type: OptionType.BOOLEAN,
+        default: true,
+        onChange: v => toggleStyle(expandCoverStyle, v)
+    },
+    hoverControls: {
+        description: "Show controls on hover",
+        type: OptionType.BOOLEAN,
+        default: false,
+        onChange: v => toggleStyle(hoverOnlyStyle, v)
+    }
+});
 
 export default definePlugin({
     name: "YouTubeMusicControls",
     description: "Adds a YouTube Music player above the account panel. Based on the SpotifyControls plugin.",
     authors: [Devs.Ven, Devs.afn, Devs.KraXen72, Devs.Av32000, Devs.nin0dev, { name: "cxntered", id: 638695599893643274n }],
-    options: {
-        port: {
-            description: "Pear Desktop API server's port",
-            type: OptionType.NUMBER,
-            default: 26538
-        },
-        maxReconnectDelay: {
-            description: "Maximum delay (in milliseconds) between reconnection attempts",
-            type: OptionType.NUMBER,
-            default: 15000
-        },
-        expandCover: {
-            description: "Expand the song cover image on click",
-            type: OptionType.BOOLEAN,
-            default: true,
-            onChange: v => toggleExpandCover(v)
-        },
-        hoverControls: {
-            description: "Show controls on hover",
-            type: OptionType.BOOLEAN,
-            default: false,
-            onChange: v => toggleHoverControls(v)
-        }
-    },
+    settings,
+
     patches: [
         {
             find: 'setProperty("--custom-app-panels-height"',
@@ -63,8 +62,8 @@ export default definePlugin({
 
     start: () => {
         YouTubeMusicStore.connectWebSocket();
-        toggleHoverControls(Settings.plugins.YouTubeMusicControls.hoverControls);
-        toggleExpandCover(Settings.plugins.YouTubeMusicControls.expandCover);
+        toggleStyle(hoverOnlyStyle, settings.store.hoverControls);
+        toggleStyle(expandCoverStyle, settings.store.expandCover);
     },
 
     stop: () => {

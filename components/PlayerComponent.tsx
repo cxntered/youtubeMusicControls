@@ -6,7 +6,6 @@
 
 import "../styles/ytMusicStyles.css";
 
-import { Settings } from "@api/Settings";
 import { classNameFactory } from "@api/Styles";
 import { Flex } from "@components/Flex";
 import { CopyIcon, ImageIcon, LinkIcon, OpenExternalIcon } from "@components/Icons";
@@ -17,6 +16,7 @@ import { openImageModal } from "@utils/discord";
 import { classes, copyWithToast } from "@utils/misc";
 import { ContextMenuApi, FluxDispatcher, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
+import { settings } from "..";
 import { SongInfo } from "../lib/types";
 import { YouTubeMusicStore } from "../lib/YouTubeMusicStore";
 import { SeekBar } from "./SeekBar";
@@ -270,7 +270,7 @@ function Info({ song }: { song: SongInfo; }) {
                     id={cl("album-image")}
                     src={img}
                     alt="Album Image"
-                    onClick={() => Settings.plugins.YouTubeMusicControls.expandCover && setCoverExpanded(!coverExpanded)}
+                    onClick={() => settings.store.expandCover && setCoverExpanded(!coverExpanded)}
                     onContextMenu={e => {
                         ContextMenuApi.openContextMenu(e, () => <AlbumContextMenu song={song} />);
                     }}
