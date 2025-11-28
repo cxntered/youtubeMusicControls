@@ -59,23 +59,14 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
             this.websocket.onclose = () => {
                 this.isConnecting = false;
                 this.websocket = null;
-
-                this.song = null;
-                this.isPlaying = false;
-                this.position = 0;
-                this.emitChange();
-
+                this.resetPlayerState();
                 this.scheduleWebSocketReconnect();
             };
 
             this.websocket.onerror = error => {
                 logger.error("WebSocket error:", error);
                 this.isConnecting = false;
-
-                this.song = null;
-                this.isPlaying = false;
-                this.position = 0;
-                this.emitChange();
+                this.resetPlayerState();
             };
         }
 
@@ -83,40 +74,41 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
             if (this.websocket) {
                 this.websocket.close();
                 this.websocket = null;
-
-                this.song = null;
-                this.isPlaying = false;
-                this.position = 0;
-                this.emitChange();
+                this.resetPlayerState();
             }
         }
 
         async togglePlayback() {
-            await this.fetchApi("/toggle-play", { method: "POST" });
+            await this.fetchApi("/toggle-play", { method: "POST" })
+                .catch(e => logger.error("Failed to toggle playback:", e));
         }
 
         async nextSong() {
-            await this.fetchApi("/next", { method: "POST" });
+            await this.fetchApi("/next", { method: "POST" })
+                .catch(e => logger.error("Failed to skip to next song:", e));
         }
 
         async previousSong() {
-            await this.fetchApi("/previous", { method: "POST" });
+            await this.fetchApi("/previous", { method: "POST" })
+                .catch(e => logger.error("Failed to go to previous song:", e));
         }
 
         async toggleShuffle() {
-            await this.fetchApi("/shuffle", { method: "POST" });
+            await this.fetchApi("/shuffle", { method: "POST" })
+                .catch(e => logger.error("Failed to toggle shuffle:", e));
         }
 
         async toggleMute() {
-            await this.fetchApi("/toggle-mute", { method: "POST" });
+            await this.fetchApi("/toggle-mute", { method: "POST" })
+                .catch(e => logger.error("Failed to toggle mute:", e));
         }
 
-        async toggleRepeat() {
+        async switchRepeat() {
             await this.fetchApi("/switch-repeat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ iteration: 1 })
-            });
+            }).catch(e => logger.error("Failed to switch repeat:", e));
         }
 
         async seek(seconds: number) {
@@ -124,7 +116,7 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ seconds })
-            });
+            }).catch(e => logger.error("Failed to seek:", e));
         }
 
         async setVolume(volume: number) {
@@ -132,7 +124,18 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ volume })
-            });
+            }).catch(e => logger.error("Failed to set volume:", e));
+        }
+
+        private resetPlayerState() {
+            this.song = null;
+            this.isPlaying = false;
+            this.muted = false;
+            this.position = 0;
+            this.volume = 100;
+            this.repeat = "NONE";
+            this.shuffle = false;
+            this.emitChange();
         }
 
         private handleWebSocketMessage(data: WebSocketMessage) {
@@ -177,13 +180,14 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
 
                 default:
                     logger.warn("Unknown WebSocket message type:", data);
+                    return;
             }
 
             this.emitChange();
         }
 
         private scheduleWebSocketReconnect() {
-            const delay = Math.min(Math.pow(2, this.reconnectAttempts) * 1000, settings.store.maxReconnectDelay);
+            const delay = Math.min(2 ** this.reconnectAttempts * 1000, settings.store.maxReconnectDelay);
             logger.info(`WebSocket has been disconnected, reconnecting in ${delay}ms`);
             this.reconnectAttempts++;
             setTimeout(() => this.connectWebSocket(), delay);
@@ -214,7 +218,7 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
                 headers.set("Authorization", `Bearer ${this.accessToken}`);
             }
 
-            return await fetch(new URL(url), {
+            return await fetch(url, {
                 ...options,
                 headers
             });
@@ -225,7 +229,7 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
 
             this.isAuthenticating = true;
             try {
-                const res = await fetch(new URL(`http://${getApiBase()}/auth/YouTubeMusicControls`), {
+                const res = await fetch(`http://${getApiBase()}/auth/YouTubeMusicControls`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" }
                 });
@@ -253,6 +257,6 @@ export const YouTubeMusicStore = proxyLazyWebpack(() => {
         }
     }
 
-    const store = new YouTubeMusicStore(FluxDispatcher, {});
+    const store = new YouTubeMusicStore(FluxDispatcher);
     return store;
 });

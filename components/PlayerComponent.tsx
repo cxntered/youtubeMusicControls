@@ -13,7 +13,7 @@ import { Paragraph } from "@components/Paragraph";
 import { Span } from "@components/Span";
 import { debounce } from "@shared/debounce";
 import { openImageModal } from "@utils/discord";
-import { classes, copyWithToast } from "@utils/misc";
+import { copyWithToast } from "@utils/misc";
 import { ContextMenuApi, FluxDispatcher, Menu, React, useEffect, useState, useStateFromStores } from "@webpack/common";
 
 import { settings } from "..";
@@ -72,19 +72,17 @@ function Controls() {
         () => [YouTubeMusicStore.isPlaying, YouTubeMusicStore.shuffle, YouTubeMusicStore.repeat]
     );
 
-    const repeatClassName = (() => {
-        switch (repeat) {
-            case "ALL": return "repeat-context";
-            case "ONE": return "repeat-track";
-            default: case "NONE": return "repeat-off";
-        }
-    })();
+    const repeatClassName = {
+        ALL: "repeat-context",
+        ONE: "repeat-track",
+        NONE: "repeat-off"
+    }[repeat] ?? "repeat-off";
 
     // the 1 is using position absolute so it does not make the button jump around
     return (
         <Flex className={cl("button-row")} style={{ gap: 0 }}>
             <Button
-                className={classes(cl("button"), cl("shuffle"), cl(shuffle ? "shuffle-on" : "shuffle-off"))}
+                className={cl(["button", "shuffle", shuffle ? "shuffle-on" : "shuffle-off"])}
                 onClick={() => YouTubeMusicStore.toggleShuffle()}
             >
                 <Shuffle />
@@ -99,8 +97,8 @@ function Controls() {
                 <SkipNext />
             </Button>
             <Button
-                className={classes(cl("button"), cl("repeat"), cl(repeatClassName))}
-                onClick={() => YouTubeMusicStore.toggleRepeat()}
+                className={cl(["button", "repeat", repeatClassName])}
+                onClick={() => YouTubeMusicStore.switchRepeat()}
                 style={{ position: "relative" }}
             >
                 {repeat === "ONE" && <span className={cl("repeat-1")}>1</span>}
@@ -137,7 +135,7 @@ function YouTubeMusicSeekBar() {
             <Span
                 size="xs"
                 weight="medium"
-                className={cl("progress-time") + " " + cl("time-left")}
+                className={cl(["progress-time", "time-left"])}
                 aria-label="Progress"
             >
                 {formatSeconds(position)}
@@ -153,7 +151,7 @@ function YouTubeMusicSeekBar() {
             <Span
                 size="xs"
                 weight="medium"
-                className={cl("progress-time") + " " + cl("time-right")}
+                className={cl(["progress-time", "time-right"])}
                 aria-label="Total Duration"
             >
                 {formatSeconds(songDuration)}
@@ -192,7 +190,7 @@ function AlbumContextMenu({ song }: { song: SongInfo; }) {
                         value={volume}
                         minValue={0}
                         maxValue={100}
-                        onChange={debounce((v: number) => YouTubeMusicStore.setVolume(v))}
+                        onChange={debounce((v: number) => YouTubeMusicStore.setVolume(Math.round(v)))}
                     />
                 )}
             />
@@ -226,20 +224,16 @@ function Info({ song }: { song: SongInfo; }) {
 
     const [coverExpanded, setCoverExpanded] = useState(false);
 
-    const i = (
-        <>
-            {img && (
-                <img
-                    id={cl("album-image")}
-                    src={img}
-                    alt="Album Image"
-                    onClick={() => settings.store.expandCover && setCoverExpanded(!coverExpanded)}
-                    onContextMenu={e => {
-                        ContextMenuApi.openContextMenu(e, () => <AlbumContextMenu song={song} />);
-                    }}
-                />
-            )}
-        </>
+    const i = img && (
+        <img
+            id={cl("album-image")}
+            src={img}
+            alt="Album Image"
+            onClick={() => settings.store.expandCover && setCoverExpanded(!coverExpanded)}
+            onContextMenu={e => {
+                ContextMenuApi.openContextMenu(e, () => <AlbumContextMenu song={song} />);
+            }}
+        />
     );
 
     if (coverExpanded && img)
@@ -306,7 +300,7 @@ export function Player() {
     useEffect(() => {
         setShouldHide(false);
         if (!isPlaying) {
-            const timeout = setTimeout(() => setShouldHide(true), 1000 * 60 * 5);
+            const timeout = setTimeout(() => setShouldHide(true), 5 * 60 * 1000);
             return () => clearTimeout(timeout);
         }
     }, [isPlaying]);
