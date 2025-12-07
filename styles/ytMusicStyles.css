@@ -146,7 +146,7 @@
 }
 
 .vc-ytmusic-comma {
-    color: var(--header-secondary);
+    color: var(--text-default);
 }
 
 .vc-ytmusic-artist[role="link"]:hover,
