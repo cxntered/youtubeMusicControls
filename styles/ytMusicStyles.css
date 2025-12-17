@@ -1,6 +1,6 @@
 #vc-ytmusic-player {
     padding: 12px;
-    background: var(--bg-overlay-floating, var(--background-base-low, var(--background-base-lower-alt)));
+    background: var(--background-base-low);
     margin: 0;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -12,19 +12,11 @@
     --vc-ytmusic-red-80: color-mix(in hsl, var(--vc-ytmusic-red), transparent 80%);
 }
 
-.theme-light #vc-ytmusic-player {
-    background: var(--bg-overlay-3, var(--background-base-lower-alt));
-}
-
-.theme-dark #vc-ytmusic-player {
-    background: var(--bg-overlay-1, var(--background-base-lower-alt));
-}
-
 .vc-ytmusic-button {
     margin: 0 2px;
     border-radius: var(--radius-sm);
     background: none;
-    color: var(--interactive-normal);
+    color: var(--interactive-icon-default);
     padding: 0;
     width: 32px;
     height: 32px;
@@ -34,8 +26,8 @@
 }
 
 .vc-ytmusic-button:hover {
-    color: var(--interactive-hover);
-    background-color: var(--background-modifier-selected);
+    color: var(--interactive-icon-hover);
+    background-color: var(--background-mod-strong);
 }
 
 .vc-ytmusic-button-icon {
@@ -126,7 +118,7 @@
 }
 
 #vc-ytmusic-song-title {
-    color: var(--header-primary);
+    color: var(--text-strong);
     font-size: 14px;
     font-weight: 600;
 }
@@ -142,7 +134,7 @@
 .vc-ytmusic-album {
     font-size: 12px;
     text-decoration: none;
-    color: var(--header-primary);
+    color: var(--text-strong);
 }
 
 .vc-ytmusic-comma {
@@ -164,39 +156,39 @@
     margin-bottom: 5px;
 }
 
-#vc-ytmusic-progress-bar [class^="slider"] {
+#vc-ytmusic-progress-bar [class$="slider"] {
     flex-grow: 1;
     width: 100%;
     padding: 0 !important;
 }
 
-#vc-ytmusic-progress-bar [class^="slider"] [class^="bar"] {
+#vc-ytmusic-progress-bar [class$="slider"] [class$="bar"] {
     height: 3px !important;
     top: calc(12px - 4px / 2 + var(--bar-offset));
 }
 
-#vc-ytmusic-progress-bar [class^="slider"] [class^="barFill"] {
-    background-color: var(--interactive-active);
+#vc-ytmusic-progress-bar [class$="slider"] [class$="barFill"] {
+    background-color: var(--interactive-icon-active);
 }
 
-#vc-ytmusic-progress-bar [class^="slider"]:hover [class^="barFill"] {
+#vc-ytmusic-progress-bar [class$="slider"]:hover [class$="barFill"] {
     background-color: var(--vc-ytmusic-red);
 }
 
-#vc-ytmusic-progress-bar [class^="slider"] [class^="grabber"] {
+#vc-ytmusic-progress-bar [class$="slider"] [class$="grabber"] {
     /* these importants are necessary, it applies a width and height through inline styles */
     height: 16px !important;
     width: 16px !important;
     margin-top: calc(17px/-2 + var(--bar-offset)/2);
     margin-left: -0.5px;
-    background-color: var(--interactive-active);
-    border-color: var(--interactive-normal);
-    color: var(--interactive-normal);
+    background-color: var(--interactive-icon-active);
+    border-color: var(--interactive-icon-default);
+    color: var(--interactive-icon-default);
     opacity: 0;
     transition: opacity 0.1s;
 }
 
-#vc-ytmusic-progress-bar [class^="slider"]:hover [class^="grabber"] {
+#vc-ytmusic-progress-bar [class$="slider"]:hover [class$="grabber"] {
     opacity: 1;
 }
 
