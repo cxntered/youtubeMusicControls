@@ -1,44 +1,52 @@
 #vc-ytmusic-player {
-    padding: 12px;
-    background: var(--background-base-low);
-    margin: 0;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border-bottom: 1px solid var(--border-subtle);
+  padding: 12px;
+  background: var(--background-base-low);
+  margin: 0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom: 1px solid var(--border-subtle);
 
-    /* so custom themes can easily change it */
-    --vc-ytmusic-red: var(--ytmusic, red);
-    --vc-ytmusic-red-90: color-mix(in hsl, var(--vc-ytmusic-red), transparent 90%);
-    --vc-ytmusic-red-80: color-mix(in hsl, var(--vc-ytmusic-red), transparent 80%);
+  /* so custom themes can easily change it */
+  --vc-ytmusic-red: var(--ytmusic, red);
+  --vc-ytmusic-red-90: color-mix(
+    in hsl,
+    var(--vc-ytmusic-red),
+    transparent 90%
+  );
+  --vc-ytmusic-red-80: color-mix(
+    in hsl,
+    var(--vc-ytmusic-red),
+    transparent 80%
+  );
 }
 
 .vc-ytmusic-button {
-    margin: 0 2px;
-    border-radius: var(--radius-sm);
-    background: none;
-    color: var(--interactive-icon-default);
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin: 0 2px;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--interactive-icon-default);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .vc-ytmusic-button:hover {
-    color: var(--interactive-icon-hover);
-    background-color: var(--background-mod-strong);
+  color: var(--interactive-icon-hover);
+  background-color: var(--background-mod-strong);
 }
 
 .vc-ytmusic-button-icon {
-    height: 24px;
-    width: 24px;
+  height: 24px;
+  width: 24px;
 }
 
 .vc-ytmusic-shuffle .vc-ytmusic-button-icon,
 .vc-ytmusic-repeat .vc-ytmusic-button-icon {
-    width: 22px;
-    height: 22px;
+  width: 22px;
+  height: 22px;
 }
 
 /* .vc-ytmusic-button:hover {
@@ -48,171 +56,171 @@
 .vc-ytmusic-repeat-context,
 .vc-ytmusic-repeat-track,
 .vc-ytmusic-shuffle-on {
-    background-color: var(--vc-ytmusic-red-90);
-    color: var(--vc-ytmusic-red);
+  background-color: var(--vc-ytmusic-red-90);
+  color: var(--vc-ytmusic-red);
 }
 
 .vc-ytmusic-repeat-context:hover,
 .vc-ytmusic-repeat-track:hover,
 .vc-ytmusic-shuffle-on:hover {
-    background-color: var(--vc-ytmusic-red-80);
-    color: var(--vc-ytmusic-red);
+  background-color: var(--vc-ytmusic-red-80);
+  color: var(--vc-ytmusic-red);
 }
 
 .vc-ytmusic-tooltip-text {
-    overflow: hidden;
-    white-space: nowrap;
-    padding-right: 0.2em;
-    max-width: 100%;
-    margin: unset;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 0.2em;
+  max-width: 100%;
+  margin: unset;
 }
 
 .vc-ytmusic-repeat-1 {
-    font-size: 70%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  font-size: 70%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .vc-ytmusic-button-row {
-    justify-content: center;
-    margin-top: 14px;
+  justify-content: center;
+  margin-top: 14px;
 }
 
 .vc-ytmusic-secondary-song-info {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .vc-ytmusic-song-info-prefix {
-    display: none;
+  display: none;
 }
 
 #vc-ytmusic-info-wrapper {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    height: 3em;
-    gap: 0.5em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 3em;
+  gap: 0.5em;
 }
 
 #vc-ytmusic-album-image {
-    height: 90%;
-    object-fit: contain;
-    border-radius: 3px;
-    transition: filter 0.2s;
+  height: 90%;
+  object-fit: contain;
+  border-radius: 3px;
+  transition: filter 0.2s;
 }
 
 #vc-ytmusic-album-expanded-wrapper #vc-ytmusic-album-image {
-    width: 100%;
-    object-fit: contain;
+  width: 100%;
+  object-fit: contain;
 }
 
 #vc-ytmusic-titles {
-    display: flex;
-    flex-direction: column;
-    padding: 0.2rem;
-    align-items: flex-start;
-    place-content: flex-start center;
-    overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0.2rem;
+  align-items: flex-start;
+  place-content: flex-start center;
+  overflow: hidden;
 }
 
 #vc-ytmusic-song-title {
-    color: var(--text-strong);
-    font-size: 14px;
-    font-weight: 600;
+  color: var(--text-strong);
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .vc-ytmusic-ellipoverflow {
-    white-space: nowrap;
-    overflow: hidden;
-    width: 100%;
-    text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
 }
 
 .vc-ytmusic-artist,
 .vc-ytmusic-album {
-    font-size: 12px;
-    text-decoration: none;
-    color: var(--text-strong);
+  font-size: 12px;
+  text-decoration: none;
+  color: var(--text-strong);
 }
 
 .vc-ytmusic-comma {
-    color: var(--text-default);
+  color: var(--text-default);
 }
 
 .vc-ytmusic-artist[role="link"]:hover,
 #vc-ytmusic-album-title[role="link"]:hover,
 #vc-ytmusic-song-title[role="link"]:hover {
-    text-decoration: underline;
-    cursor: pointer;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 #vc-ytmusic-progress-bar {
-    position: relative;
-    color: var(--text-default);
-    width: 100%;
-    margin: 0.5em 0;
-    margin-bottom: 5px;
+  position: relative;
+  color: var(--text-default);
+  width: 100%;
+  margin: 0.5em 0;
+  margin-bottom: 5px;
 }
 
-#vc-ytmusic-progress-bar [class$="slider"] {
-    flex-grow: 1;
-    width: 100%;
-    padding: 0 !important;
+#vc-ytmusic-progress-bar [class^="slider"] {
+  flex-grow: 1;
+  width: 100%;
+  padding: 0 !important;
 }
 
-#vc-ytmusic-progress-bar [class$="slider"] [class$="bar"] {
-    height: 3px !important;
-    top: calc(12px - 4px / 2 + var(--bar-offset));
+#vc-ytmusic-progress-bar [class^="slider"] [class^="bar"] {
+  height: 3px !important;
+  top: calc(12px - 4px / 2 + var(--bar-offset));
 }
 
-#vc-ytmusic-progress-bar [class$="slider"] [class$="barFill"] {
-    background-color: var(--interactive-icon-active);
+#vc-ytmusic-progress-bar [class^="slider"] [class^="barFill"] {
+  background-color: var(--interactive-icon-active);
 }
 
-#vc-ytmusic-progress-bar [class$="slider"]:hover [class$="barFill"] {
-    background-color: var(--vc-ytmusic-red);
+#vc-ytmusic-progress-bar [class^="slider"]:hover [class^="barFill"] {
+  background-color: var(--vc-ytmusic-red);
 }
 
-#vc-ytmusic-progress-bar [class$="slider"] [class$="grabber"] {
-    /* these importants are necessary, it applies a width and height through inline styles */
-    height: 16px !important;
-    width: 16px !important;
-    margin-top: calc(17px/-2 + var(--bar-offset)/2);
-    margin-left: -0.5px;
-    background-color: var(--interactive-icon-active);
-    border-color: var(--interactive-icon-default);
-    color: var(--interactive-icon-default);
-    opacity: 0;
-    transition: opacity 0.1s;
+#vc-ytmusic-progress-bar [class^="slider"] [class^="grabber"] {
+  /* these importants are necessary, it applies a width and height through inline styles */
+  height: 16px !important;
+  width: 16px !important;
+  margin-top: calc(17px / -2 + var(--bar-offset) / 2);
+  margin-left: -0.5px;
+  background-color: var(--interactive-icon-active);
+  border-color: var(--interactive-icon-default);
+  color: var(--interactive-icon-default);
+  opacity: 0;
+  transition: opacity 0.1s;
 }
 
-#vc-ytmusic-progress-bar [class$="slider"]:hover [class$="grabber"] {
-    opacity: 1;
+#vc-ytmusic-progress-bar [class^="slider"]:hover [class^="grabber"] {
+  opacity: 1;
 }
 
 #vc-ytmusic-progress-text {
-    margin: 0;
+  margin: 0;
 }
 
 .vc-ytmusic-progress-time {
-    font-size: 12px;
-    top: 10px;
-    position: absolute;
-    margin-top: 8px;
-    font-family: var(--font-code);
+  font-size: 12px;
+  top: 10px;
+  position: absolute;
+  margin-top: 8px;
+  font-family: var(--font-code);
 }
 
 .vc-ytmusic-time-left {
-    left: 0;
+  left: 0;
 }
 
 .vc-ytmusic-time-right {
-    right: 0;
+  right: 0;
 }
 
 .vc-ytmusic-fallback {
-    padding: 0.5em;
-    color: var(--text-default);
+  padding: 0.5em;
+  color: var(--text-default);
 }
